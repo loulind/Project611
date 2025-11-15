@@ -13,6 +13,7 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt-get update && \
     yes | unminimize && \
     apt-get update && \
-    apt-get install -y man-db && \
+    apt-get install -y man-db sqlite3 && \
     rm -rf /var/lib/apt/lists/*
 
+RUN R -e "install.packages(c('RSQlite','DBI'))"
