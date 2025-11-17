@@ -10,7 +10,10 @@ txt <- read_file("~/work/Data/sound_and_fury.txt")
 
 
 
-# (2) splitting into paragraph tokens (a lot of the dialogue is one line?)
+
+
+
+# (2) splitting into paragraph tokens (a lot of the dialogue is one liners?)
 paragraphs <- txt %>%
   str_split("\\n\\s*\\n") %>% # split on empty lines
   unlist() %>%                # creates vector from string
@@ -20,6 +23,8 @@ paragraphs <- txt %>%
 paragraphs <- paragraphs[-(3182:3235), ]  # remove non-story material
 paragraphs <- paragraphs[-(1:18), ]
 view(paragraphs)
+
+
 
 
 
@@ -36,6 +41,8 @@ it <- itoken(tokens, progressbar = TRUE) # creating iterator
 vocab <- create_vocabulary(it)
 vectorizer <- vocab_vectorizer(vocab)
 tcm <- create_tcm(it, vectorizer, skip_grams_window = 5)
+
+
 
 
 
@@ -77,6 +84,8 @@ unique_index <- match(
 
 
 
+
+
 # (7) t-SNE (might want to compare to UMAP dimensionality reduction)
 library(Rtsne)
 set.seed(123)
@@ -110,4 +119,40 @@ ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
   labs(
     title = "t-SNE of Paragraph Embeddings from *The Sound and the Fury*",
     color = "Paragraph Order"
+  )
+
+
+
+
+# (9) 2d tsne representation color coded by narrator perspective
+benjy_end     <- 800   # ends at paragraph ~800 (fix later)
+quentin_end   <- 1600  # ends at paragraph ~1600
+jason_end     <- 2400  # ends at paragraph ~2400
+#  the remainder of the book is a 3rd person omniscient perspective
+
+tsne_df <- tsne_df %>% # assigns each paragraph to it's respective section
+  mutate(
+    section = case_when(
+      para_id <= benjy_end            ~ "1. Benjy",
+      para_id <= quentin_end          ~ "2. Quentin",
+      para_id <= jason_end            ~ "3. Jason",
+      TRUE                            ~ "4. Omniscient"
+    )
+  )
+
+ggplot(tsne_df, aes(x = x, y = y, color = section)) +
+  geom_point(alpha = 0.7, size = 1.5) +
+  scale_color_manual(
+    values = c(
+      "1. Benjy"      = "#56B4E9",
+      "2. Quentin"    = "#009E73",
+      "3. Jason"      = "#CC79A7",
+      "4. Omniscient" = "#E69F00"
+    )
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Paragraph-Level t-SNE of *The Sound and the Fury*",
+    subtitle = "Colored by narrative section",
+    color = "Narrator"
   )
