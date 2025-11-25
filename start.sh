@@ -11,7 +11,7 @@ sleep 4
 echo "Starting Docker container..."
 cd ~/Project611
 
-docker build . --platform=linux/amd64 -t my-rstudio-with-man
+docker build . --platform=linux/amd64 -t lou-final-project
 docker run\
   --platform=linux/amd64\
   -v $(pwd):/home/rstudio/work\
