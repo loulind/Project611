@@ -18,4 +18,4 @@ docker run\
   -v $HOME/.ssh:/home/rstudio/.ssh\
   -v $HOME/.gitconfig:/home/rstudio/.gitconfig\
   -e PASSWORD=123\
-  -p 8787:8787 -it my-rstudio-with-man
+  -p 8787:8787 -it lou-final-project
