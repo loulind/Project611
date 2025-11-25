@@ -1,12 +1,5 @@
-library(tidyverse)
-library(httr)
-library(jsonlite)
-library(digest)
-library(Rtsne)
-library(viridis)
-
 ########### this is a scratch document for my final BIOS 611 project #######
-# (1) reading in plain text file
+# reading in plain text file
 library(tidyverse)
 txt <- read_file("~/work/Data/sound_and_fury.txt")
 
@@ -15,7 +8,7 @@ txt <- read_file("~/work/Data/sound_and_fury.txt")
 
 
 
-# (2) splitting into paragraph tokens (a lot of the dialogue is one liners?)
+# splitting into paragraph tokens (a lot of the dialogue is one liners?)
 paragraphs <- txt %>%
   str_split("\\n\\s*\\n") %>% # split on empty lines
   unlist() %>%                # creates vector from string
@@ -29,65 +22,62 @@ view(paragraphs)
 
 
 
-# (3) Pulling in model
-OLLAMA_MODEL <- "qwen3-embedding:8b"
-CACHE_DIR <- ".embedding_cache"
 
-if (!dir.exists(CACHE_DIR)) dir.create(CACHE_DIR)
-
-get_cache_path <- function(text) {
-  file.path(CACHE_DIR, paste0(digest(text, algo = "md5"), ".json"))
-}
-
-
-
-
-
-# (4) Computing embeddings for every paragraph
-fetch_ollama_embedding <- function(text) {  # Send text → embedding vector
-  resp <- httr::POST(
-    url = "http://localhost:11434/api/embeddings",
-    body = list(
-      model = OLLAMA_MODEL,
-      prompt = text
-    ),
+# NEED HELP HERE! somehow get ollama qwen3 embedding model and calculate embedding vector?
+library(jsonlite)
+library(httr)
+embed_paragraph <- function(text) {
+  url <- "http://host.docker.internal:11434/api/embeddings"
+  
+  body <- list(
+    model = "qwen3-embedding:8b",
+    prompt = text
+  )
+  
+  res <- httr::POST(
+    url,
+    body = jsonlite::toJSON(body, auto_unbox = TRUE),
     encode = "json"
   )
-  parsed <- httr::content(resp, as = "parsed", encoding = "UTF-8")
+  
+  parsed <- jsonlite::fromJSON(httr::content(res, as = "text"))
   return(parsed$embedding)
 }
 
-get_embedding <- function(text) {
-  cache_path <- get_cache_path(text)
-  if (file.exists(cache_path)) {
-    return(jsonlite::fromJSON(cache_path))
-  }
-  emb <- fetch_ollama_embedding(text)
-  write(jsonlite::toJSON(emb, auto_unbox = TRUE), cache_path)
-  return(emb)
-}
+embeddings <- paragraphs$paragraph |> 
+  map(embed_paragraph) |> 
+  do.call(what = rbind)
 
-paragraph_embeddings <- lapply(paragraphs$paragraph, get_embedding)
-embedding_matrix <- do.call(rbind, paragraph_embeddings)
+# Find unique embeddings and their mapping
+emb_mat <- embeddings  # rename for clarity
+ind_unique <- !duplicated(emb_mat)   # TRUE for first occurrence
+emb_unique <- emb_mat[ind_unique, ]  # unique embedding rows
 
 
 
 
 
-# (5) t-SNE 
+# t-SNE 
 # (might want to compare to UMAP dimensionality reduction?)
 # (UMAP assumes normal distribution across reimannian manifold)
 library(Rtsne)
 # set.seed(123) WAIT TO FINISH PROJECT BEFORE SETTING SEED!!!
-
-tsne_out <- Rtsne(
-  unique_embeddings,
+tsne_unique <- Rtsne(
+  emb_unique,
   dims = 2,
   perplexity = 30,
   verbose = TRUE
 )
 
-tsne_coords <- tsne_out$Y[unique_index, ]
+# Initialize matrix of t-SNE coords for all rows
+tsne_coords <- matrix(NA, nrow = nrow(emb_mat), ncol = 2)
+
+# Fill in coordinates
+tsne_coords[ind_unique, ] <- tsne_unique$Y
+
+# For duplicated rows, copy coordinates of their first occurrence
+dup_map <- match(1:nrow(emb_mat), which(ind_unique))
+tsne_coords <- tsne_unique$Y[dup_map, ]
 
 tsne_df <- paragraphs %>%
   mutate(
@@ -100,7 +90,7 @@ tsne_df <- paragraphs %>%
 
 
 
-# (6) 2d tsne representation color coded by order in the book
+# 2d tsne representation color coded by order in the book
 library(viridis)
 ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
   geom_point(alpha = 0.8, size = 2) +
@@ -114,8 +104,10 @@ ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
 
 
 
-# (7) 2d tsne representation color coded by narrator perspective
-benjy_end     <- 800   # ends at paragraph ~800 (fix later)
+
+
+# 2d tsne representation color coded by narrator perspective
+benjy_end     <- 800   # ends at paragraph ~800 (FIX LATER)
 quentin_end   <- 1600  # ends at paragraph ~1600
 jason_end     <- 2400  # ends at paragraph ~2400
 #  the remainder of the book is a 3rd person omniscient perspective
