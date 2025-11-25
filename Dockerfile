@@ -13,7 +13,13 @@ RUN rm -rf /var/lib/apt/lists/* && \
     apt-get update && \
     yes | unminimize && \
     apt-get update && \
-    apt-get install -y man-db sqlite3 && \
     rm -rf /var/lib/apt/lists/*
+    
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
 
-RUN R -e "install.packages(c('RSQlite','DBI'))"
+# Pull your embedding model
+RUN ollama pull qwen3-embedding:8b
+
+# Install R packages
+RUN R -e "install.packages(c('tidyverse','httr','jsonlite','digest','Rtsne','viridis'), repos='https://cloud.r-project.org')"
