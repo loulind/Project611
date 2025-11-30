@@ -2,7 +2,7 @@
 ##### please see the README for full instructions on running the program ####
 # reading in plain text file
 library(tidyverse)
-txt <- read_file("~/work/Data/sound_and_fury.txt")
+txt <- read_file("~/work/raw_data/sound_and_fury.txt")
 
 
 
@@ -126,7 +126,7 @@ umap_df <- paragraphs %>%
 
 # 2d tsne and umap representation color coded by order in the book
 library(viridis)
-ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
+tsne_chrono <- ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
   geom_point(alpha = 0.8, size = 2) +
   scale_color_viridis(option = "plasma") +
   theme_minimal() +
@@ -135,7 +135,7 @@ ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
     color = "Paragraph Order"
   )
 
-ggplot(umap_df, aes(x = x, y = y, color = para_id)) +
+umap_chrono <- ggplot(umap_df, aes(x = x, y = y, color = para_id)) +
   geom_point(alpha = 0.8, size = 2) +
   scale_color_viridis(option = "plasma") +
   theme_minimal() +
@@ -163,7 +163,7 @@ tsne_df <- tsne_df %>% # assigns each paragraph to it's respective section
     )
   )
 
-ggplot(tsne_df, aes(x = x, y = y, color = section)) +
+tsne_narrator <- ggplot(tsne_df, aes(x = x, y = y, color = section)) +
   geom_point(alpha = 0.7, size = 1.5) +
   scale_color_manual(
     values = c(
@@ -175,7 +175,7 @@ ggplot(tsne_df, aes(x = x, y = y, color = section)) +
   ) +
   theme_minimal() +
   labs(
-    title = "Paragraph-Level t-SNE of *The Sound and the Fury*",
+    title = "Paragraph-Level t-SNE of 'The Sound and the Fury'",
     subtitle = "Colored by narrative section",
     color = "Narrator"
   )
@@ -189,7 +189,7 @@ umap_df <- umap_df %>%
       TRUE                            ~ "4. Omniscient"
     )
   )
-ggplot(umap_df, aes(x = x, y = y, color = section)) +
+umap_narrator <- ggplot(umap_df, aes(x = x, y = y, color = section)) +
   geom_point(alpha = 0.7, size = 1.8) +
   scale_color_manual(
     values = c(
@@ -201,7 +201,95 @@ ggplot(umap_df, aes(x = x, y = y, color = section)) +
   ) +
   theme_minimal() +
   labs(
-    title = "UMAP of Paragraph Embeddings",
+    title = "Paragraph-Level UMAP of 'The Sound and the Fury'",
     subtitle = "Colored by narrative section",
     color = "Narrator"
   )
+
+ggsave(filename = "~/work/figures/tsne_chrono.jpeg", 
+       plot = tsne_chrono, 
+       width = 6, 
+       height = 4, 
+       units = "in")
+ggsave(filename = "~/work/figures/umap_chrono.jpeg", 
+       plot = umap_chrono,
+       width = 6, 
+       height = 4, 
+       units = "in")
+ggsave(filename = "~/work/figures/tsne_narrator.jpeg", 
+       plot = tsne_narrator,   
+       width = 6, 
+       height = 4, 
+       units = "in")
+ggsave(filename = "~/work/figures/umap_narrator.jpeg", 
+       plot = umap_narrator,
+       width = 6, 
+       height = 4, 
+       units = "in")
+
+# animated interactive plotly graph
+library(plotly)
+
+frames <- map(unique(umap_df$frame), function(k) {
+  df_k <- umap_df %>% filter(frame <= k)   # <- cumulative subset
+  
+  list(
+    name = k,
+    data = list(
+      list(
+        x = df_k$x,
+        y = df_k$y,
+        mode = "markers",
+        type = "scatter",
+        marker = list(size = 6, opacity = 0.8),
+        text = paste0(
+          "Paragraph ID: ", df_k$para_id, "<br>",
+          "Narrator: ", df_k$section, "<br><br>",
+          substr(df_k$paragraph, 1, 200), "..."
+        ),
+        hoverinfo = "text",
+        color = df_k$section
+      )
+    )
+  )
+})
+
+p <- plot_ly(
+  data = umap_df[1,],   # first point only (plotly needs something to start with)
+  x = ~x,
+  y = ~y,
+  type = "scatter",
+  mode = "markers",
+  marker = list(size = 6, opacity = 0.8),
+  text = ~paste0(
+    "Paragraph ID: ", para_id, "<br>",
+    "Narrator: ", section, "<br><br>",
+    substr(paragraph, 1, 200), "..."
+  ),
+  hoverinfo = "text",
+  color = ~section
+) %>%
+  layout(
+    title = "Animated UMAP (Cumulative): Paragraphs Appearing in Order",
+    xaxis = list(title = "UMAP-1"),
+    yaxis = list(title = "UMAP-2"),
+    updatemenus = list(
+      list(
+        type = "buttons",
+        buttons = list(
+          list(label = "Play", method = "animate", args = list(NULL)),
+          list(label = "Pause", method = "animate",
+               args = list(NULL, list(mode = "immediate")))
+        )
+      )
+    )
+  ) %>%
+  animation_opts(
+    frame = 50,         # ms
+    transition = 0,
+    redraw = TRUE       # important: redraw full cumulative graph each frame
+  )
+
+p$x$frames <- frames
+
+p
