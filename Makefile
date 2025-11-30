@@ -14,11 +14,10 @@ clean:
 dirs:
 	mkdir -p derived_data
 	mkdir -p figures
-	
-	
+
 
 # creates vector containing paragraphs in book
-paragraphs.csv: paragraphs.R sound_and_fury.txt
+paragraphs.csv: paragraphs.R sound_and_fury.txt | dirs
 	paragraphs.R
 
 # creates embeddings vector
@@ -34,5 +33,9 @@ spectral.csv: embeddings.csv spectral.R
 	spectral.R
 	
 # figures
-tsne_scatter.png umap_scatter.png spectral_scatter.png: figures.R
+tsne_narrator.png\
+ umap_narrator.png\
+ tsne_chrono.png\
+ umap_chrono.png\
+ spectral_scatter.png: figures.R
 	figures.R
