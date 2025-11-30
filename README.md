@@ -1,6 +1,6 @@
 ---
 title: "Embedding and Dimensionality Reduction of 'The Sound and the Fury' by William Faulkner"
-author: "Lou Lindsley""
+author: "Lou Lindsley"
 ---
 The data set is a plain text file version of The Sound and the Fury by
 William Faulkner. This project separates the novel by paragraph, uses
