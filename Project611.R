@@ -1,4 +1,5 @@
 ########### this is a scratch document for my final BIOS 611 project #######
+##### please see the README for full instructions on running the program ####
 # reading in plain text file
 library(tidyverse)
 txt <- read_file("~/work/Data/sound_and_fury.txt")
@@ -107,10 +108,9 @@ ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
 
 
 # 2d tsne representation color coded by narrator perspective
-benjy_end     <- 800   # ends at paragraph ~800 (FIX LATER)
-quentin_end   <- 1600  # ends at paragraph ~1600
-jason_end     <- 2400  # ends at paragraph ~2400
-#  the remainder of the book is a 3rd person omniscient perspective
+benjy_end     <- 1017   # quentin's section starts on paragraph 1018
+quentin_end   <- 1939  # jason's section starts on paragraph 1940
+jason_end     <- 2670  # omniscient section starts at paragraph 2671
 
 tsne_df <- tsne_df %>% # assigns each paragraph to it's respective section
   mutate(
