@@ -7,13 +7,13 @@ all:
 	
 # cleans project
 clean:
-	rm -rf Data
-	rm -rf Figures
+	rm -rf derived_data
+	rm -rf figures
 
-# creates folders for project and pulls in plain text file
+# creates folders for project
 dirs:
-	mkdir -p Data
-	curl -o Data/sound_and_fury.txt https://www.gutenberg.org/cache/epub/75170/pg75170.txt
+	mkdir -p derived_data
+	mkdir -p figures
 	
 	
 
