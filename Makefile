@@ -24,7 +24,7 @@ tsne_narr_order.png\
  umap_narr_order.png\
  tsne_par_order.png\
  umap_par_order.png\
- spectral_scatter.png: tsne.csv umap.csv spectral.csv figures.R
+ spectral_scatter.png: tsne.csv umap.csv figures.R
 	figures.R
 	
 # report
