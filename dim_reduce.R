@@ -10,7 +10,7 @@ emb_unique <- emb_mat[ind_unique, ]  # unique embedding rows
 
 # t-SNE 
 library(Rtsne)
-# set.seed(123) WAIT TO FINISH PROJECT BEFORE SETTING SEED!!!
+set.seed(12012025)
 tsne_unique <- Rtsne(
   emb_unique,
   dims = 2,
