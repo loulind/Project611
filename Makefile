@@ -1,10 +1,5 @@
-.PHONY: all clean dirs
+.PHONY: clean dirs
 
-# Generates all artefacts in project. it's better to better to make the artefacts in order
-all:
-	make dirs
-	make 
-	
 # cleans project
 clean:
 	rm -rf derived_data
@@ -16,26 +11,26 @@ dirs:
 	mkdir -p figures
 
 
-# creates vector containing paragraphs in book
-paragraphs.csv: paragraphs.R sound_and_fury.txt | dirs
-	paragraphs.R
-
 # creates embeddings vector
-embeddings.csv: embeddings.R paragraphs.csv
-	embeddings.Rd
+embeddings.csv: ~/raw_data/sound_and_fury.txt embeddings.R | dirs
+	embeddings.R
 
-# dimensionality reduction
-tsne.csv umap.csv: tsne.R embeddings.csv
-	tsne.R
-	
-# clustering
-spectral.csv: embeddings.csv spectral.R
-	spectral.R
-	
+# dimensionality-reduced data
+tsne.csv umap.csv: dim_reduce.R embeddings.csv
+	dim_reduce.R
+
 # figures
-tsne_narrator.png\
+tsne_narr_order.png\
+ umap_narr_order.png\
+ tsne_par_order.png\
+ umap_par_order.png\
+ spectral_scatter.png: tsne.csv umap.csv spectral.csv figures.R
+	figures.R
+	
+# report
+report.html: tsne_narrator.png\
  umap_narrator.png\
  tsne_chrono.png\
  umap_chrono.png\
- spectral_scatter.png: figures.R
-	figures.R
+ spectral_scatter.png report.Rmd | dirs
+	report.Rmd
