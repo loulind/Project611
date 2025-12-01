@@ -1,7 +1,7 @@
 ###  (3) Generates the figures of the project  ####
 library(tidyverse)
-tsne_df <- read_csv("derived_data/tsne.csv")
-umap_df <- read_csv("derived_data/umap.csv")
+tsne_df <- read_csv("~/work/derived_data/tsne.csv")
+umap_df <- read_csv("~/work/derived_data/umap.csv")
 
 
 # 2d tsne and umap representation color coded by order in the book
@@ -153,3 +153,9 @@ p <- plot_ly(
   animation_button(label = "Play")
 
 p
+
+
+# outputting html file
+library(htmlwidgets)
+
+saveWidget(p, file = "~/work/figures/my_plotly_plot.html", selfcontained = TRUE)
