@@ -12,13 +12,12 @@ The plain text file can be downloaded at: https://www.gutenberg.org/cache/epub/7
 (I also pushed the file to my Github just because it was a small file)
 
 1. If necessary, download the plain text file above; save as "sound_and_fury.txt"
-2. Clone git repository
+2. Clone git repository and cd into project directory
 3. Run ```./start.sh``` in host terminal.
 (might need to give execute permissions with ```chmod +x start.sh```
 4. In R Console, you may need to ```setwd("~/work")``` and in Rstudio Terminal, ```cd ~/work/```
 5. Download Ollama application from: https://ollama.com/download/
 6. In host terminal, run the following (it will take awhile)
 ```ollama pull qwen3-embedding:8b ; ollama serve```
-7. In Rstudio Terminal do ```make clean``` and then you can either ```make all```
-or ```make <specific-output>```
-
+7. In Rstudio Terminal do ```make clean``` and then you can either ```make report```
+or ```make <specific-target>```
