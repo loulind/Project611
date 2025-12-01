@@ -1,4 +1,4 @@
-########### this is a scratch document for my final BIOS 611 project #######
+########### this is a scratch document for Lou's final BIOS 611 project #######
 ##### please see the README for full instructions on running the program ####
 # reading in plain text file
 library(tidyverse)
@@ -131,7 +131,7 @@ tsne_chrono <- ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
   scale_color_viridis(option = "plasma") +
   theme_minimal() +
   labs(
-    title = "t-SNE of Paragraph Embeddings from *The Sound and the Fury*",
+    title = "t-SNE of 'The Sound and the Fury' embeddings, colored by paragraph order",
     color = "Paragraph Order"
   )
 
@@ -140,7 +140,7 @@ umap_chrono <- ggplot(umap_df, aes(x = x, y = y, color = para_id)) +
   scale_color_viridis(option = "plasma") +
   theme_minimal() +
   labs(
-    title = "UMAP of Paragraph Embeddings from *The Sound and the Fury*",
+    title = "UMAP of 'The Sound and the Fury' embeddings, colored by paragraph order",
     color = "Paragraph Order"
   )
 
@@ -175,7 +175,7 @@ tsne_narrator <- ggplot(tsne_df, aes(x = x, y = y, color = section)) +
   ) +
   theme_minimal() +
   labs(
-    title = "Paragraph-Level t-SNE of 'The Sound and the Fury'",
+    title = "t-SNE of 'The Sound and the Fury' embeddings, colored by narrator",
     subtitle = "Colored by narrative section",
     color = "Narrator"
   )
@@ -201,7 +201,7 @@ umap_narrator <- ggplot(umap_df, aes(x = x, y = y, color = section)) +
   ) +
   theme_minimal() +
   labs(
-    title = "Paragraph-Level UMAP of 'The Sound and the Fury'",
+    title = "UMAP of 'The Sound and the Fury' embeddings, colored by narrator",
     subtitle = "Colored by narrative section",
     color = "Narrator"
   )
@@ -230,66 +230,64 @@ ggsave(filename = "~/work/figures/umap_narrator.jpeg",
 # animated interactive plotly graph
 library(plotly)
 
-frames <- map(unique(umap_df$frame), function(k) {
-  df_k <- umap_df %>% filter(frame <= k)   # <- cumulative subset
-  
-  list(
-    name = k,
-    data = list(
-      list(
-        x = df_k$x,
-        y = df_k$y,
-        mode = "markers",
-        type = "scatter",
-        marker = list(size = 6, opacity = 0.8),
-        text = paste0(
-          "Paragraph ID: ", df_k$para_id, "<br>",
-          "Narrator: ", df_k$section, "<br><br>",
-          substr(df_k$paragraph, 1, 200), "..."
-        ),
-        hoverinfo = "text",
-        color = df_k$section
-      )
-    )
-  )
-})
+# umap_df must contain columns: x, y, section, paragraph, para_id, frame
 
+# Sort by frame so animation is in correct order
+umap_df <- umap_df %>% arrange(frame)
+
+# Base plot (Plotly will only draw points with frame <= current frame)
 p <- plot_ly(
-  data = umap_df[1,],   # first point only (plotly needs something to start with)
+  umap_df,
   x = ~x,
   y = ~y,
+  frame = ~frame,
   type = "scatter",
   mode = "markers",
+  color = ~section,
   marker = list(size = 6, opacity = 0.8),
   text = ~paste0(
     "Paragraph ID: ", para_id, "<br>",
     "Narrator: ", section, "<br><br>",
     substr(paragraph, 1, 200), "..."
   ),
-  hoverinfo = "text",
-  color = ~section
+  hoverinfo = "text"
 ) %>%
+  
   layout(
-    title = "Animated UMAP (Cumulative): Paragraphs Appearing in Order",
+    title = "Cumulative UMAP Animation: Paragraphs Appearing in Order",
     xaxis = list(title = "UMAP-1"),
-    yaxis = list(title = "UMAP-2"),
-    updatemenus = list(
-      list(
-        type = "buttons",
-        buttons = list(
-          list(label = "Play", method = "animate", args = list(NULL)),
-          list(label = "Pause", method = "animate",
-               args = list(NULL, list(mode = "immediate")))
-        )
-      )
-    )
+    yaxis = list(title = "UMAP-2")
   ) %>%
+  
+  # Animation controls
   animation_opts(
-    frame = 50,         # ms
+    frame = 50,
     transition = 0,
-    redraw = TRUE       # important: redraw full cumulative graph each frame
+    redraw = FALSE
+  ) %>%
+  
+  animation_button(label = "Play")
+
+p$x$data[[1]]$transforms <- list(
+  list(
+    type = "filter",
+    target = "frame",
+    operation = "<=",
+    value = max(umap_df$frame)
   )
+)
 
-p$x$frames <- frames
-
-p
+# TRUE cumulative: update filter value every frame
+for (k in unique(umap_df$frame)) {
+  p$x$frames[[k]]$traces <- c(0)  # always update trace 0
+  p$x$frames[[k]]$layout <- list(
+    updatemenus = list(),
+    sliders = list(),
+    filter = list(
+      type = "filter",
+      target = umap_df$frame,
+      operation = "<=",
+      value = k
+    )
+  )
+}
