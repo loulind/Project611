@@ -15,9 +15,10 @@ The plain text file can be downloaded at: https://www.gutenberg.org/cache/epub/7
 2. Clone git repository and cd into project directory
 3. Run ```./start.sh``` in host terminal.
 (might need to give execute permissions with ```chmod +x start.sh```
-4. In R Console, you may need to ```setwd("~/work")``` and in Rstudio Terminal, ```cd ~/work/```
-5. Download Ollama application from: https://ollama.com/download/
-6. In host terminal, run the following (it will take awhile)
+4. Open browser to http://localhost:8787 (user: rstudio, pw: 123)
+5. In R Console, you may need to ```setwd("~/work")``` and in Rstudio Terminal, ```cd ~/work/```
+6. Download Ollama application from: https://ollama.com/download/
+7. In host terminal, run the following (it will take awhile)
 ```ollama pull qwen3-embedding:8b ; ollama serve```
-7. In Rstudio Terminal do ```make clean``` and then you can either ```make report```
+8. In Rstudio Terminal do ```make clean``` and then you can either ```make report```
 or ```make <specific-target>```
