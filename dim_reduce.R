@@ -1,6 +1,7 @@
 ######  (2) GENERATES DIMENSIONALITY-REDUCED DATA  #########
 library(tidyverse)
 embeddings <- read_csv("~/work/derived_data/embeddings.csv")
+paragraphs <- read_csv("~/work/derived_data/paragraphs.csv")
 
 # Find unique embeddings and their mapping
 emb_mat <- as.matrix(embeddings)
@@ -13,13 +14,13 @@ library(Rtsne)
 set.seed(12012025)
 tsne_unique <- Rtsne(
   emb_unique,
-  dims = 2,
+  dims = 3,
   perplexity = 30,
   verbose = TRUE
 )
 
 # initialize matrix of t-SNE coords for all rows
-tsne_coords <- matrix(NA, nrow = nrow(emb_mat), ncol = 2)
+tsne_coords <- matrix(NA, nrow = nrow(emb_mat), ncol = 3)
 
 # fill in coordinates
 tsne_coords[ind_unique, ] <- tsne_unique$Y
@@ -32,9 +33,9 @@ tsne_df <- paragraphs %>%
   mutate(
     x = tsne_coords[, 1],
     y = tsne_coords[, 2],
+    z = tsne_coords[, 3],
     para_id = row_number()
   )
-
 
 
 
