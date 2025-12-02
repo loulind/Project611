@@ -47,3 +47,4 @@ embeddings <- paragraphs$paragraph |>
 
 # exporting unique embedding vector and embeddings matrix
 write.csv(embeddings, file = "~/work/derived_data/embeddings.csv", row.names = FALSE)
+write.csv(paragraphs, file = "~/work/derived_data/paragraphs.csv", row.names = FALSE)
