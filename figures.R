@@ -3,7 +3,6 @@ library(tidyverse)
 tsne_df <- read_csv("~/work/derived_data/tsne.csv")
 umap_df <- read_csv("~/work/derived_data/umap.csv")
 
-
 # 2d tsne and umap representation color coded by order in the book
 library(viridis)
 tsne_par_order <- ggplot(tsne_df, aes(x = x, y = y, color = para_id)) +
@@ -114,21 +113,21 @@ ggsave(filename = "~/work/figures/umap_narr_order.jpeg",
 library(plotly)
 
 # Ensure data is sorted
-umap_df <- umap_df %>% arrange(para_id)
+tsne_df <- tsne_df %>% arrange(para_id)
 
 # Group paragraphs into bins of 10 → reduces frames & prevents crashing
-umap_df$frame_group <- floor(umap_df$para_id / 10)
+tsne_df$frame_group <- floor(tsne_df$para_id / 10)
 
 # Build animation
 p <- plot_ly(
-  umap_df,
+  tsne_df,
   x = ~x,
   y = ~y,
   frame = ~frame_group,    # animation steps
   type = "scatter",
   mode = "markers",
   color = ~section,        # narrator
-  marker = list(size = 6, opacity = 0.8),
+  marker = list(size = 8, opacity = 0.9),
   text = ~paste0(
     "Paragraph ID: ", para_id, "<br>",
     "Narrator: ", section, "<br><br>",
@@ -138,9 +137,9 @@ p <- plot_ly(
 ) %>%
   
   layout(
-    title = "UMAP Animation (Grouped Every 10 Paragraphs)",
-    xaxis = list(title = "UMAP-1"),
-    yaxis = list(title = "UMAP-2")
+    title = "t-SNE Animation (Grouped Every 10 Paragraphs)",
+    xaxis = list(title = "t-SNE dim 1"),
+    yaxis = list(title = "t-SNE dim 2")
   ) %>%
   
   # Animation settings
@@ -159,3 +158,25 @@ p
 library(htmlwidgets)
 
 saveWidget(p, file = "~/work/figures/my_plotly_plot.html", selfcontained = TRUE)
+
+
+
+# Interactive 3-D Scatter plot with plotly to confirm structure
+scatter_3d <- plot_ly(
+  data = tsne_df,
+  x = ~x,
+  y = ~y,
+  z = ~z,
+  color = ~factor(section),
+  colors = c("#56B4E9", "#009E73", "#CC79A7", "#E69F00"), # colorblind-friendly palette
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(size = 3, opacity = 0.5),
+  text = ~paste0(
+    "Paragraph ID: ", para_id, "<br>",
+    "Narrator: ", section, "<br><br>",
+    substr(paragraph, 1, 200), "..."
+  ),
+  hoverinfo = "text"
+)
+scatter_3d
