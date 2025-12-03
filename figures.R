@@ -113,14 +113,46 @@ ggsave(filename = "~/work/figures/umap_narr_order.jpeg",
 library(plotly)
 
 # Ensure data is sorted
-tsne_df <- tsne_df %>% arrange(para_id)
+umap_df <- umap_df %>% arrange(para_id)
 
 # Group paragraphs into bins of 10 → reduces frames & prevents crashing
-tsne_df$frame_group <- floor(tsne_df$para_id / 10)
+umap_df$frame_group <- floor(umap_df$para_id / 10)
 
 # Build animation
+# p <- plot_ly(
+#   tsne_df,
+#   x = ~x,
+#   y = ~y,
+#   frame = ~frame_group,    # animation steps
+#   type = "scatter",
+#   mode = "markers",
+#   color = ~section,        # narrator
+#   marker = list(size = 8, opacity = 0.9),
+#   text = ~paste0(
+#     "Paragraph ID: ", para_id, "<br>",
+#     "Narrator: ", section, "<br><br>",
+#     substr(paragraph, 1, 200), "..."
+#   ),
+#   hoverinfo = "text"
+# ) %>%
+#   
+#   layout(
+#     title = "t-SNE Animation (Grouped Every 10 Paragraphs)",
+#     xaxis = list(title = "t-SNE dim 1"),
+#     yaxis = list(title = "t-SNE dim 2")
+#   ) %>%
+#   
+#   # Animation settings
+#   animation_opts(
+#     frame = 100,      # speed between frames
+#     transition = 0,
+#     redraw = FALSE   # important for stability
+#   ) %>%
+#   
+#   animation_button(label = "Play")
+
 p <- plot_ly(
-  tsne_df,
+  umap_df,
   x = ~x,
   y = ~y,
   frame = ~frame_group,    # animation steps
@@ -137,9 +169,9 @@ p <- plot_ly(
 ) %>%
   
   layout(
-    title = "t-SNE Animation (Grouped Every 10 Paragraphs)",
-    xaxis = list(title = "t-SNE dim 1"),
-    yaxis = list(title = "t-SNE dim 2")
+    title = "UMAP Animation (10 Paragraphs per Frame)",
+    xaxis = list(title = "UMAP dim 1"),
+    yaxis = list(title = "UMAP dim 2")
   ) %>%
   
   # Animation settings
@@ -150,15 +182,6 @@ p <- plot_ly(
   ) %>%
   
   animation_button(label = "Play")
-
-p
-
-
-# outputting html file
-library(htmlwidgets)
-
-saveWidget(p, file = "~/work/figures/my_plotly_plot.html", selfcontained = TRUE)
-
 
 
 # Interactive 3-D Scatter plot with plotly to confirm structure
@@ -179,4 +202,12 @@ scatter_3d <- plot_ly(
   ),
   hoverinfo = "text"
 )
-scatter_3d
+
+
+# outputting html file
+library(htmlwidgets)
+
+saveWidget(p, file = "~/work/figures/animated.html", selfcontained = TRUE)
+saveWidget(scatter_3d, file = "~/work/figures/tsne3d.html", selfcontained = TRUE)
+
+
