@@ -1,0 +1,41 @@
+---
+title: "Final Report: Embedding Analysis of 'The Sound and the Fury'"
+author: "Lou Lindsley"
+date: "2025-12-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+echo = FALSE,
+warning = FALSE,
+message = FALSE,
+fig.align = "center"
+)
+
+fig_path <- "~/work/figures"
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r paragraph_order}
+knitr::include_graphics(file.path(fig_path, "tsne_par_order.jpeg"))
+knitr::include_graphics(file.path(fig_path, "umap_par_order.jpeg"))
+```
+
+```{r narrator_order}
+knitr::include_graphics(file.path(fig_path, "tsne_narr_order.jpeg"))
+knitr::include_graphics(file.path(fig_path, "umap_narr_order.jpeg"))
+```
+
+```{r animated}
+htmltools::includeHTML("~/work/figures/tsne3d.html")
+```
+
+```{r animated}
+htmltools::includeHTML("~/work/figures/animated.html")
+```
