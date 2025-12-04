@@ -8,5 +8,4 @@ docker run \
   -e PASSWORD=123 \
   --add-host=host.docker.internal:host-gateway \
   -p 8787:8787 \
-  -p 6052:6052 \
   -it lou-final-project
