@@ -24,3 +24,12 @@ The plain text file can be downloaded at: https://www.gutenberg.org/cache/epub/7
 ```ollama pull qwen3-embedding:8b ; ollama serve```
 8. In Rstudio Terminal do ```make clean```, ```make dirs```, and then ```make report```
 (or ```make <specific-target>```)
+
+*For dev eyes only:*
+Please see Makefile for the structure and flow of outputs in this project.
+If you add a new figure to the project, add the file path as a target under
+the "figures" entry. If you perform some intermediate analysis of the embedding,
+create a new target in the Makefile with derived_data/embedding.csv as a 
+dependency. If you need to pull in new packages to the container, add the 
+package name to the import.packages command in the Dockerfile. You can test 
+to make sure new targets work by using command ```make <new-target-name>```
