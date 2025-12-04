@@ -1,6 +1,7 @@
 # my personal .gitignore
 derived_data
 figures
+interactives
 report.html
 .DS_Store
 
