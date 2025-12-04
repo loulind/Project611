@@ -1,14 +1,10 @@
----
-title: "Embedding and Dimensionality Reduction of 'The Sound and the Fury' by William Faulkner"
-author: "Lou Lindsley"
----
+*This is the README for Lou's BIOS 611 final project*
+
 The data set is a plain text file version of 'The Sound and the Fury' by
 William Faulkner. This project separates the novel by paragraph, uses
 a locally-run LLM to create an embedding for each paragraph, and finally
 visualizes the data in 2 and 3 dimensions using dimensionality reduction
-on the embedding vector. I was particularly interested in comparing the 
-ability of t-SNE and UMAP at capturing the semantic differences between
-different narrator perspectives in the story. 
+on the embedding vector.
 
 The plain text file can be downloaded at: https://www.gutenberg.org/cache/epub/75170/pg75170.txt
 (I pushed the text file to my repo under work/raw_data/ to make it easier for the grader)
