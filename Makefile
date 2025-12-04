@@ -4,33 +4,38 @@
 clean:
 	rm -rf derived_data
 	rm -rf figures
+	rm -f report.html
 
 # creates folders for project
 dirs:
 	mkdir -p derived_data
 	mkdir -p figures
 
-
-# creates embeddings vector
-embeddings.csv: ~/raw_data/sound_and_fury.txt embeddings.R | dirs
-	embeddings.R
+# creates embeddings vector and vector of paragraphs
+derived_data/embeddings.csv derived_data/paragraphs.csv:\
+ raw_data/sound_and_fury.txt embeddings.R | dirs
+	Rscript embeddings.R
 
 # dimensionality-reduced data
-tsne.csv umap.csv: dim_reduce.R embeddings.csv
-	dim_reduce.R
+tsne.csv umap.csv: dim_reduce.R\
+ derived_data/embeddings.csv\
+ derived_data/paragraphs.csv
+	Rscript dim_reduce.R
 
 # figures
-tsne_narr_order.png\
- umap_narr_order.png\
- tsne_par_order.png\
- umap_par_order.png\
- spectral_scatter.png: tsne.csv umap.csv figures.R
-	figures.R
-	
+figures/tsne_narr_order.png\
+ figures/umap_narr_order.png\
+ figures/tsne_par_order.png\
+ figures/umap_par_order.png\
+ figures/tsne3d.html\
+ figures/umap3d.html\
+ figures/animated.html: tsne.csv umap.csv figures.R
+	Rscript figures.R
+
 # report
-report.html: tsne_narrator.png\
- umap_narrator.png\
- tsne_chrono.png\
- umap_chrono.png\
- spectral_scatter.png report.Rmd | dirs
-	report.Rmd
+report.html: figures/tsne_narr_order.png\
+ figures/tsne_par_order.png\
+ figures/umap_narr_order.png\
+ figures/umap_par_order.png\
+ report.Rmd | dirs
+	R -e "rmarkdown::render('report.Rmd', output_file='report.html')"
