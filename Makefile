@@ -27,9 +27,9 @@ figures/tsne_narr_order.png\
  figures/umap_narr_order.png\
  figures/tsne_par_order.png\
  figures/umap_par_order.png\
- figures/tsne3d.html\
- figures/umap3d.html\
- figures/animated.html: tsne.csv umap.csv figures.R
+ interactives/tsne3d.html\
+ interactives/umap3d.html\
+ interactives/animated.html: tsne.csv umap.csv figures.R
 	Rscript figures.R
 
 # report
