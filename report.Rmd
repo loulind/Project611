@@ -5,8 +5,17 @@ date: "2025-12-03"
 output: html_document
 ---
 
-## Introduction
-Intro body (how I got the data? cleaning, etc)
+## INTRODUCTION
+After our lecture on dimensionality reduction of text embeddeddings, I was interested in applying this method to 'The Sound and the Fury' by William Faulkner. The reason I was drawn to this idea is due the the various narrator perspectives in the story. The book is separated into 4 distinct sections:
+
+(1) Benjy's section
+(2) Quentin's section
+(3) Jason's section
+(4) 3rd-person Omniscient section
+
+Benjy's section was of particular interest to me because this character does not experience time linearly. His story is told as a sequence of sensations, as he moves back and forth across various events in his life. Many of these events also include the other narrators, so the book has several different perspectives for many events.
+
+My main goal of this project was to assess the ability (or possibly lack thereof) of two different dimensionality reduction techniques, t-SNE and UMAP, in capturing semantic differences between the distinct narrators. I was curious if the dimensionally-reduced data reflected specific idiocracies of the narrators, such as Benjy's non-chronological story telling, Jason's more concrete, discernible tone, or the more neutral tone of the omniscient narrator. UMAP is "supposed" to be better at capturing local and global semantic differences compared to t-SNE, but it also has assumptions about the structure of the data (see https://umap-learn.readthedocs.io/en/latest/ for more info), whereas t-SNE does not. 
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -23,34 +32,29 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Section 1: 2-D Projections, Coloring Based on Paragraph Order
-Body 1
+## SECTION 1: 2-D Projections, Coloring Based on Paragraph Order
+The first graphs I made were 2d projections of the t-SNE and UMAP transformed data, colored as a gradient depending on the location of each paragraph in the novel. While there does appear to be some structure in the UMAP plot, I got the sense that these differences were possibly more due to the order of the narrators rather than the order of the paragraphs. This makes sense as the book is known for its nonlinear storytelling. 
 
 ```{r paragraph_order}
 knitr::include_graphics(file.path(fig_path, "tsne_par_order.jpeg"))
 knitr::include_graphics(file.path(fig_path, "umap_par_order.jpeg"))
 ```
 
-## Section 2: 2-D Projections, Coloring Based on Narrative Section
-Body 2
+## SECTION 2: 2-D Projections, Coloring Based on Narrative Section
+I believe the structure of the data shows more clearly when coloring by narrator. The tsne graph doesn't distinguish the narrators as well as UMAP in two dimensions. Here, we see two particular things of note: The Jason and Quentin sections inhabit two very distinct clusters, and the Benjy and Omniscient sections span the whole triangle-shaped space, with the omniscient-section plot collecting around the left edge of the triangle. 
 
 ```{r narrator_order}
 knitr::include_graphics(file.path(fig_path, "tsne_narr_order.jpeg"))
 knitr::include_graphics(file.path(fig_path, "umap_narr_order.jpeg"))
 ```
 
-## Section 3: 3-D Interactive Scatter Plots
-Body 3
+## SECTION 3: 3-D Interactive Scatter Plots
+In the project directory, open the "interactives" folder and open tsne3d.html and umap3d.html. Here, you can toggle the different narrator points by clicking on their name in the legend (or double click to isolate). What you'll see (particularly in the UMAP plot) is that the Benjy and Omniscient sections are both spread out across the whole story's embedding space with several little clusters. The omniscient section also creates a distinct arc structure across the plot. 
 
 
-## Section 4: Moving Through Book in 10-paragraph Chunks
-Body 4
+## SECTION 4: Moving Through Book in 10-paragraph Chunks
+In work/interactives, open the "animated.html". My goal here was to get a sense for how "confusing" a section was. Each frame is a plot of 10 sequential paragraphs. By pressing play, the animation moves across each group of 10 paragraph plots. My idea was that a rough proxy for how confusing a section is could be how scattered the points are in individual frames. What we see is that for the Benjy section, the points jump across all parts of the space, seemingly at random. Then we see the Quentin and Jason sections are all relatively contained in separate quadrants. Then finally, even though the omniscient section appears to have a similar spread as the Benjy section in the raw plots, we see that each individual frame is relatively clustered compared to Benjy's. This also reflects the fact that Benjy's section constantly moves between disparate events.
 
 
-Datascience Component
-=====================
-
-1. fairly deep description of the data set
-2. 4-6 figures reflecting questions you asked about the data set
-3. 1-2 methods we talked about
-4. concluding notes potential future directions
+## CONCLUSION:
+I believe these graphs demonstrate how useful UMAP could be in capturing semantic differences between different narrator perspectives, even though it entails assumptions compared to t-SNE. What I would love to explore in the future is to visually compare the 2d UMAP scatterplots for other Faulkner novels and compare that to 2d UMAP scatterplots of AI-generated work prompted to imitate Faulkner. In a sense, I'm curious if "Faulkner-ness" (or possibly any historical author-ness) can be visually distinguished from "faux-Faulkner-ness". 
