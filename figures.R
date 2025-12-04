@@ -118,7 +118,39 @@ umap_df <- umap_df %>% arrange(para_id)
 # Group paragraphs into bins of 10 → reduces frames & prevents crashing
 umap_df$frame_group <- floor(umap_df$para_id / 10)
 
-# Build animation
+animation <- plot_ly(
+  umap_df,
+  x = ~x,
+  y = ~y,
+  frame = ~frame_group,    # animation steps
+  type = "scatter",
+  mode = "markers",
+  color = ~section,        # narrator
+  marker = list(size = 8, opacity = 1),
+  text = ~paste0(
+    "Paragraph ID: ", para_id, "<br>",
+    "Narrator: ", section, "<br><br>",
+    substr(paragraph, 1, 200), "..."
+  ),
+  hoverinfo = "text"
+) %>%
+  
+  layout(
+    title = "UMAP Animation (10 Paragraphs per Frame)",
+    xaxis = list(title = "UMAP dim 1"),
+    yaxis = list(title = "UMAP dim 2")
+  ) %>%
+  
+  # Animation settings
+  animation_opts(
+    frame = 150,      # speed between frames
+    transition = 0,
+    redraw = FALSE   # important for stability
+  ) %>%
+  
+  animation_button(label = "Play")
+
+# Build animation (I think it works better with UMAP, but I kept tsne here)
 # p <- plot_ly(
 #   tsne_df,
 #   x = ~x,
@@ -151,41 +183,11 @@ umap_df$frame_group <- floor(umap_df$para_id / 10)
 #   
 #   animation_button(label = "Play")
 
-p <- plot_ly(
-  umap_df,
-  x = ~x,
-  y = ~y,
-  frame = ~frame_group,    # animation steps
-  type = "scatter",
-  mode = "markers",
-  color = ~section,        # narrator
-  marker = list(size = 8, opacity = 0.9),
-  text = ~paste0(
-    "Paragraph ID: ", para_id, "<br>",
-    "Narrator: ", section, "<br><br>",
-    substr(paragraph, 1, 200), "..."
-  ),
-  hoverinfo = "text"
-) %>%
-  
-  layout(
-    title = "UMAP Animation (10 Paragraphs per Frame)",
-    xaxis = list(title = "UMAP dim 1"),
-    yaxis = list(title = "UMAP dim 2")
-  ) %>%
-  
-  # Animation settings
-  animation_opts(
-    frame = 100,      # speed between frames
-    transition = 0,
-    redraw = FALSE   # important for stability
-  ) %>%
-  
-  animation_button(label = "Play")
+
 
 
 # Interactive 3-D Scatter plot with plotly to confirm structure
-scatter_3d <- plot_ly(
+tsne_3d <- plot_ly(
   data = tsne_df,
   x = ~x,
   y = ~y,
@@ -203,11 +205,28 @@ scatter_3d <- plot_ly(
   hoverinfo = "text"
 )
 
+# Interactive 3-D Scatter plot with plotly to confirm structure
+umap_3d <- plot_ly(
+  data = umap_df,
+  x = ~x,
+  y = ~y,
+  z = ~z,
+  color = ~factor(section),
+  colors = c("#56B4E9", "#009E73", "#CC79A7", "#E69F00"), # colorblind-friendly palette
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(size = 3, opacity = 0.5),
+  text = ~paste0(
+    "Paragraph ID: ", para_id, "<br>",
+    "Narrator: ", section, "<br><br>",
+    substr(paragraph, 1, 200), "..."
+  ),
+  hoverinfo = "text"
+)
 
-# outputting html file
+# outputting html file and static image for final report
 library(htmlwidgets)
 
-saveWidget(p, file = "~/work/figures/animated.html", selfcontained = TRUE)
-saveWidget(scatter_3d, file = "~/work/figures/tsne3d.html", selfcontained = TRUE)
-
-
+saveWidget(animation, file = "~/work/figures/animated.html", selfcontained = TRUE)
+saveWidget(tsne_3d, file = "~/work/figures/tsne3d.html", selfcontained = TRUE)
+saveWidget(umap_3d, file = "~/work/figures/umap3d.html", selfcontained = TRUE)
