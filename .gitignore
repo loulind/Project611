@@ -1,6 +1,7 @@
 # my personal .gitignore
 derived_data
 figures
+report.html
 .DS_Store
 
 # Recommended R gitignore
