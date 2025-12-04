@@ -48,6 +48,7 @@ umap_config <- umap.defaults
 umap_config$n_neighbors <- 15
 umap_config$min_dist <- 0.1
 umap_config$metric <- "euclidean"
+umap_config$n_components <- 3 
 
 umap_unique <- umap(emb_unique, config = umap_config)
 
@@ -66,6 +67,7 @@ umap_df <- paragraphs %>%
   mutate(
     x = umap_coords[, 1],
     y = umap_coords[, 2],
+    z = umap_coords[, 3],
     para_id = row_number()
   )
 
