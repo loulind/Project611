@@ -227,6 +227,6 @@ umap_3d <- plot_ly(
 # outputting html file and static image for final report
 library(htmlwidgets)
 
-saveWidget(animation, file = "~/work/figures/animated.html", selfcontained = TRUE)
-saveWidget(tsne_3d, file = "~/work/figures/tsne3d.html", selfcontained = TRUE)
-saveWidget(umap_3d, file = "~/work/figures/umap3d.html", selfcontained = TRUE)
+saveWidget(animation, file = "~/work/interactives/animated.html", selfcontained = TRUE)
+saveWidget(tsne_3d, file = "~/work/interactives/tsne3d.html", selfcontained = TRUE)
+saveWidget(umap_3d, file = "~/work/interactives/umap3d.html", selfcontained = TRUE)
