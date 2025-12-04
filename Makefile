@@ -22,7 +22,7 @@ tsne.csv umap.csv: dim_reduce.R\
  derived_data/paragraphs.csv
 	Rscript dim_reduce.R
 
-# figures
+# figures and interactive visuals
 figures/tsne_narr_order.png\
  figures/umap_narr_order.png\
  figures/tsne_par_order.png\
