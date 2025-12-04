@@ -26,7 +26,8 @@ embed_paragraph <- function(text) {
   
   body <- list(
     model = "qwen3-embedding:8b",
-    prompt = text
+    prompt = text,
+    options = list(seed = 12012025)
   )
   
   res <- httr::POST(
