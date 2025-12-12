@@ -4,5 +4,5 @@ USER root
 
 # Install R packages
 RUN R -e "install.packages(c('tidyverse','httr','jsonlite','digest',\
-'Rtsne','viridis', 'umap', 'plotly', 'htmlwidgets' 'knitr', \
+'Rtsne','viridis', 'umap', 'plotly', 'htmlwidgets,' 'knitr',\
 repos='https://cloud.r-project.org')"
