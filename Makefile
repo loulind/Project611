@@ -4,12 +4,14 @@
 clean:
 	rm -rf derived_data
 	rm -rf figures
+	rm -rf interactives
 	rm -f report.html
 
 # creates folders for project
 dirs:
 	mkdir -p derived_data
 	mkdir -p figures
+	mkdir -p interactives
 
 # creates embeddings vector and vector of paragraphs
 derived_data/embeddings.csv derived_data/paragraphs.csv:\
