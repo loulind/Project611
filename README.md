@@ -9,7 +9,8 @@ on the embedding vector.
 The plain text file can be downloaded at: https://www.gutenberg.org/cache/epub/75170/pg75170.txt
 (I pushed the text file to my repo under work/raw_data/ to make it easier for the grader)
 
-1. If necessary, download the plain text file above; save as "sound_and_fury.txt"
+1. If necessary, download the plain text file above; save as "sound_and_fury.txt". 
+(This project also requires downloading Docker Desktop)
 2. Clone git repository and cd into project directory
 3. Run ```./start.sh``` in host terminal.
 (might need to give execute permissions with ```chmod +x start.sh```
